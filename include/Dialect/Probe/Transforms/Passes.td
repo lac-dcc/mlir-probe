@@ -9,11 +9,18 @@ def LowerToFuncCallsPass
   let dependentDialects = ["mlir::memref::MemRefDialect"];
     let options = [
     Option<
-      "probeFuncPrefix",
-      "probe-func-prefix",
+      "observeFuncPrefix",
+      "observe-func-prefix",
       "std::string",
-      /*default=*/"\"probeMemref\"",
-      "Prefix used for the name of the probe function (default: probeMemref)."
+      /*default=*/"\"probeObserveMemref\"",
+      "Prefix used for the name of the 'observe' function (default: probeObserveMemref)."
+    >,
+    Option<
+      "reportFuncName",
+      "report-func-name",
+      "std::string",
+      /*default=*/"\"probeReport\"",
+      "Name used for the 'report' function (default: probeReport)."
     >
   ];
 }
