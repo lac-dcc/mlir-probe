@@ -5,6 +5,7 @@ include "ProbeBase.td"
 include "mlir/Dialect/Bufferization/IR/BufferizableOpInterface.td"
 include "mlir/IR/OpBase.td"
 include "mlir/IR/CommonTypeConstraints.td"
+include "mlir/Interfaces/SideEffectInterfaces.td"
 
 class Probe_Op<string mnemonic, list<Trait> traits = []>
     : Op<Probe_Dialect, mnemonic, traits>;
@@ -73,6 +74,22 @@ def Probe_ObserveOp: Probe_Op<"observe", [
       rewriter.replaceOp(tensorOp, memrefOp);
       return llvm::success();
     }
+  }];
+}
+
+def Probe_ReportOp: Probe_Op<"report"> {
+  let summary = "Report observations that have been made so far";
+  let description = [{
+    Operation that reports information that has been observed up until the
+    point it is invoked. The format which is used to report information can be
+    customized by the implementer.
+  }];
+
+  let arguments = (ins);
+  let results = (outs);
+
+  let assemblyFormat = [{
+    `(` `)` attr-dict
   }];
 }
 

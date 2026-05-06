@@ -19,6 +19,7 @@ func.func @foo() {
   probe.observe(%c1: tensor<100xf32>) {opID = 1 : i32, resultID = 0 : i32}
   %c2 = arith.constant dense<[[1., 2.], [9., 8.]]> : tensor<2x2xf32>
   probe.observe(%c2: tensor<2x2xf32>) {opID = 2 : i32, resultID = 0 : i32}
+  probe.report()
   return
 }
 // CHECK: opID: 0, resultID: 0, sum: 100

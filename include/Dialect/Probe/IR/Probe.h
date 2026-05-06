@@ -5,6 +5,7 @@
 #include "mlir/Dialect/Bufferization/IR/BufferizableOpInterface.h"
 #include "mlir/IR/Builders.h"
 #include "mlir/IR/BuiltinTypes.h"
+#include "mlir/Interfaces/SideEffectInterfaces.h"
 
 #include "Dialect/Probe/IR/ProbeOpsDialect.h.inc"
 
