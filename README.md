@@ -1,4 +1,7 @@
-# mlir-probe
+<p align="center">
+  <img alt="Project Banner" src="assets/images/Banner.png" width="90%" height="auto"/></br>
+</p>
+
 `probe` is a small MLIR dialect which can be used to profile/observe runtime
 values for tensors. You can customize which profiling actions are applied by
 providing the implementation of the profiling (or "probe") function.
