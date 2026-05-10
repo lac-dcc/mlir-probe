@@ -7,23 +7,52 @@ values for tensors. You can customize which profiling actions are applied by
 providing the implementation of the profiling (or "probe") function.
 
 ## Operations
-There are two main operations in the `probe` dialect:
-- **`probe.observe`**: This operation takes a tensor value as an input and it
+The `probe` dialect provides two operations: `probe.observe` and
+`probe.report`, which are better explained below. Note that we don't provide
+any passes to actually insert these ops in the IR. It is the user's
+responsibility to determine when and where to insert each of these ops.
+
+### `probe.observe`
+This operation takes a tensor value as an input and it
 represents an "observation" on said tensor. This could mean anything, depending
 on its implementation. You can see this op as an abstraction for profiling a
 tensor (either of type `tensor` or `memref`). This operation should not have
 any side effects, and it is the implementer's responsibility to ensure this.
 Moreover, the operation has two mandatory attributes: `opID` and `resultID`,
 which are better explained in the [Probe functions](#probe-functions) section.
-- **`probe.report`**: This operation is used to indicate that observations for
+
+```mlir
+func.func @foo() {
+  // ...
+  %0 = linalg.add ins(%tensor0, %tensor1 : tensor<2x2xf32>, tensor<2x2xf32>) outs(%out0: tensor<2x2xf32>) -> tensor<2x2xf32>
+  probe.observe(%0: tensor<2x2xf32>) {opID = 0 : i32, resultID = 0 : i32}
+  // ...
+  %1 = linalg.matmul ins(%tensor2, %tensor3 : tensor<100x?xi64>, tensor<100x?xi64>) outs(%out1: tensor<100x?xi64>) -> tensor<100x?xi64>
+  probe.observe(%1: tensor<100x?xi64>) {opID = 1 : i32, resultID = 0 : i32}
+  // ...
+}
+```
+
+### `probe.report`
+This operation is used to indicate that observations for
 all tensors seen so far should be reported. The actual format used to represent
 this information also depends on implementation. This operation is needed to
 indicate when to "consolidate" observations that have been made during the
 program's execution.
 
-Note that we don't provide any passes to actually insert these ops in the IR.
-It is the user's responsibility to determine when and where to insert each of
-these ops.
+```mlir
+func.func @foo() {
+  // ...
+  probe.observe(%0: tensor<2x2xf32>) {opID = 0 : i32, resultID = 0 : i32}
+  probe.observe(%1: tensor<2x2xf32>) {opID = 0 : i32, resultID = 1 : i32}
+  // ...
+  // ...
+  probe.observe(%2: tensor<100x?xi64>) {opID = 1 : i32, resultID = 0 : i32}
+  // ...
+  probe.report() // Will produce some report at runtime
+  return
+}
+```
 
 ## Passes
 There is only one pass provided as part of the dialect:
@@ -49,7 +78,7 @@ observation/profiling action. The function should take three arguments:
   `probeObserveMemrefUI8`.
   - `int32_t opID`: Unique identifier for the operation which produced this
   memref/tensor.
-  - `int32_t resultID`: Index of this memref/tensor in the list of result of
+  - `int32_t resultID`: Index of this memref/tensor in the results of
   the defining operation.
 - **Report function (default name: `probeReport`)**: This function defines the
 behavior for `probe.report`. It implements the logic for reporting observed
