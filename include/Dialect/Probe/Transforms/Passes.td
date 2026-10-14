@@ -6,7 +6,11 @@ include "mlir/Pass/PassBase.td"
 def LowerToFuncCallsPass
     : Pass<"probe-lower-to-func-calls", "mlir::ModuleOp"> {
   let summary = "Convert probe ops to function calls";
-  let dependentDialects = ["mlir::memref::MemRefDialect"];
+  let dependentDialects = [
+    "mlir::arith::ArithDialect",
+    "mlir::LLVM::LLVMDialect",
+    "mlir::memref::MemRefDialect"
+  ];
     let options = [
     Option<
       "observeFuncPrefix",
