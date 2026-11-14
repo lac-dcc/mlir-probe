@@ -19,9 +19,10 @@ void _mlir_ciface_probeObserveMemrefF32(UnrankedMemRefType<float> *m,
   results.emplace_back(opID, resultID, sum);
 }
 
-void _mlir_ciface_probeReport() {
+void _mlir_ciface_probeReport(const char *probeHeader) {
   // Simply print to stdout. However, this could be reported in any other
   // format (CSV, JSON, YAML, etc.)
+  std::cout << probeHeader << "\n";
   for (auto [opID, resultID, sum] : results) {
     std::cout << "opID: " << opID << ", resultID: " << resultID
               << ", sum: " << sum << "\n";

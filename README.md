@@ -54,6 +54,15 @@ func.func @foo() {
 }
 ```
 
+The optional `reportArgs` attribute holds a list of constants that are
+forwarded, in order, as arguments to the report function. The dialect does not
+interpret these values; their meaning is defined by the runtime implementation
+of the report function (e.g. an output file path):
+
+```mlir
+probe.report() {reportArgs = ["report.csv", 42 : i32]}
+```
+
 ## Passes
 There is only one pass provided as part of the dialect:
 `probe-lower-to-func-calls`. It lowers all `probe` operations to function
@@ -82,8 +91,13 @@ observation/profiling action. The function should take three arguments:
   the defining operation.
 - **Report function (default name: `probeReport`)**: This function defines the
 behavior for `probe.report`. It implements the logic for reporting observed
-values, which could be presented in any desired format. The function shouldn't
-take any arguments.
+values, which could be presented in any desired format. Its arguments must
+match the `reportArgs` attribute of the `probe.report` ops being lowered:
+string attributes are passed as null-terminated `const char *` pointers,
+while integer and float attributes are passed as scalars. When
+`reportArgs` is absent, the function takes no arguments. All `probe.report`
+ops in a module share one report function, so their `reportArgs` signatures
+must agree.
 
 There are a few important details you should be aware of when implementing
 probe functions:

@@ -11,7 +11,8 @@ extern "C" PROBE_EXPORT void
 _mlir_ciface_probeObserveMemrefF32(UnrankedMemRefType<float> *m, int32_t opID,
                                    int32_t resultID);
 
-/// Report function example.
-extern "C" PROBE_EXPORT void _mlir_ciface_probeReport();
+/// Report function example. String report arguments arrive as null-terminated
+/// `const char *` pointers.
+extern "C" PROBE_EXPORT void _mlir_ciface_probeReport(const char *probeHeader);
 
 #endif // PROBE_TESTS_EXAMPLE_PROBE_H

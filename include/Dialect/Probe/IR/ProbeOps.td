@@ -83,9 +83,17 @@ def Probe_ReportOp: Probe_Op<"report"> {
     Operation that reports information that has been observed up until the
     point it is invoked. The format which is used to report information can be
     customized by the implementer.
+
+    The optional `reportArgs` attribute is an opaque list of constants that
+    are forwarded, in order, as arguments to the report function when
+    lowering. String attributes are materialized as pointers to
+    null-terminated C-strings (`const char *`), while integer and float
+    attributes are materialized as scalar constants. The dialect does not
+    interpret these values; their meaning is defined by the runtime
+    implementation of the report function.
   }];
 
-  let arguments = (ins);
+  let arguments = (ins OptionalAttr<ArrayAttr>:$reportArgs);
   let results = (outs);
 
   let assemblyFormat = [{
